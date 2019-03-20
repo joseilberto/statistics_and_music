@@ -2,7 +2,7 @@
 *.csv
 *__pycache__
 *.pyc
-*.txt
 *.dat
 *.log
 *.npy
+*venv
