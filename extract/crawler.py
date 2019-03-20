@@ -7,9 +7,8 @@ class Crawler(My_Crawler):
 
 
     @property
-    def download(self):
-        kwargs = self.kwargs.get("download", True)
-        return kwargs
+    def download(self):        
+        return self.kwargs.get("download", True)
 
 
     def get_and_store_midis(self, *args, **kwargs):
