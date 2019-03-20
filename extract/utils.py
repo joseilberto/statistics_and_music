@@ -1,4 +1,8 @@
-def remove_punctuation(string, removals, strip_it, separator = " "):
+import re
+import unidecode
+
+
+def remove_punctuation(string, removals, strip_it, separator):
     string = string.rstrip(strip_it)
     for removal in removals:
         string = string.replace(removal, "")
@@ -7,4 +11,4 @@ def remove_punctuation(string, removals, strip_it, separator = " "):
         year = year.group(1)
         string = string.replace("({})".format(year), "")
     string = string.replace(separator, "_")
-    return string
+    return unidecode.unidecode(string)
