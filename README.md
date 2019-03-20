@@ -13,8 +13,12 @@ Midi Page, process the midi to a csv file with specified data and then get the
 statistics for each file.
 
 ```
-sh requirements.sh
-source env/bin/activate
+source requirements.sh
+```
+
+If you need to source it again from another terminal session, use:
+```
+source ./venv/bin/activate
 ```
 
 ## Usage ##
