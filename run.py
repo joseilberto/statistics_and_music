@@ -2,7 +2,7 @@ import argparse
 import os
 
 from extract.SETTINGS import MIDI_URL
-from crawler import get_and_store_midis
+from extract.crawler import get_and_store_midis
 
 
 def set_args():
