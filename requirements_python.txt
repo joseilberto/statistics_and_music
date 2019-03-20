@@ -1,5 +1,6 @@
 ipython==7.3.0
 ipdb==0.12
+lxml==4.3.2
 matplotlib==3.0.3
 mido==1.2.9
 numpy==1.16.2
