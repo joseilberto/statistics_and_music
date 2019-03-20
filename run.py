@@ -2,7 +2,7 @@ import argparse
 import os
 
 from extract.SETTINGS import MIDI_URL
-from extract.crawler import get_and_store_midis
+from extract.crawler import Crawler
 
 
 def set_args():
@@ -31,4 +31,5 @@ def process_args(arguments = set_args()):
 
 if __name__ == "__main__":
     output_path = process_args()
-    get_and_store_midis(MIDI_URL, output_path)
+    crawler = Crawler(MIDI_URL, **{"out_path": output_path})
+    crawler.get_and_store_midis(MIDI_URL, output_path)

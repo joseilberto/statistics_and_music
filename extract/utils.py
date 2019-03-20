@@ -11,4 +11,4 @@ def remove_punctuation(string, removals, strip_it, separator):
         year = year.group(1)
         string = string.replace("({})".format(year), "")
     string = string.replace(separator, "_")
-    return unidecode.unidecode(string)
+    return unidecode.unidecode(string).lower()
