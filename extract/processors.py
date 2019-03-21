@@ -62,13 +62,13 @@ class My_Crawler:
         songs = doc.xpath(XPATHS["songs"])
         songs_folder = []
         for i, song in enumerate(songs):
-            songs[i] = remove_punctuation(song, ["\n", ","], "\n",
+            songs[i] = remove_punctuation(song, [".", "\n", ","], "\n",
                                         separator = ' ')
             songs_folder.append(artist_folder + songs[i] + self.bar)
             os.makedirs(artist_folder + songs[i] + self.bar, exist_ok = True)
         with open(artist_folder + "songs_summary.txt", "w") as file1:
             for song in songs:
-                file1.write(song)
+                file1.write(song + "\n")
         tables = [fromstring(tostring(table)) for table in
                                                 doc.xpath(XPATHS["table"])]
         for i, table in enumerate(tables):
@@ -76,20 +76,23 @@ class My_Crawler:
             cols_idxs = {}
             lines = [fromstring(tostring(line)) for line in
                                             table.xpath(XPATHS["lines_table"])]
-            file2 = open(songs_folder[i] + songs[i] + "_summary.txt", "a+")
+            file2 = open(songs_folder[i] + songs[i] + "_summary.txt", "w")
+            table_data = []
             for idx, line in enumerate(lines):
                 line_data = []
                 if idx == 0:
                     cols = [col.replace(" ", "").lower()
-                                    for col in line.xpath(XPATHS["cols_table"]("h"))]
+                            for col in line.xpath(XPATHS["cols_table"]("h"))]
                     for idx_col, col in enumerate(cols):
                         if col in RELEVANT_COLS:
                             song_data[col] = []
                             cols_idxs[idx_col] = col
                             line_data.append(col)
                 else:
-                    cols = [col.lower()
-                                    for col in line.xpath(XPATHS["cols_table"]("d"))]
+                    first_col = [col.lower().replace(".", "_").replace(" ", "")
+                            for col in line.xpath(XPATHS["cols_table"]("d[1]/a"))]
+                    cols = first_col + [col.lower()
+                            for col in line.xpath(XPATHS["cols_table"]("d"))]
                     for idx_col, col in enumerate(cols):
                         if idx_col in cols_idxs.keys():
                             song_data[cols_idxs[idx_col]].append(col)
@@ -102,7 +105,7 @@ class My_Crawler:
                         self.save_midi(midi_url, folder, song_name)
                 file2.write(",".join(line_data))
                 file2.write("\n")
-                # TODO Fix the entire function
+                table_data.append(line_data)                
 
 
     def get_first_page(self, *args, **kwargs):

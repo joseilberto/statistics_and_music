@@ -10,5 +10,9 @@ def remove_punctuation(string, removals, strip_it, separator):
     if year:
         year = year.group(1)
         string = string.replace("({})".format(year), "")
+    opus = re.search(r"(\d+)/(\d+)", string)
+    if opus:
+        opus = opus.group(1)
+        string = string.replace("/", "-")
     string = string.replace(separator, "_")
     return unidecode.unidecode(string).lower()
