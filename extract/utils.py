@@ -24,4 +24,8 @@ def remove_punctuation(string, removals, strip_it, separator):
         opus = opus.group(1)
         string = string.replace("/", "-")
     string = string.replace(separator, "_")
+    return remove_special_characters(string)
+
+
+def remove_special_characters(string):
     return unidecode.unidecode(string).lower()

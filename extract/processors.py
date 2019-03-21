@@ -9,7 +9,7 @@ import os
 import sys
 
 from .constants import RELEVANT_COLS, XPATHS
-from .utils import join_to_path, remove_punctuation
+from .utils import join_to_path, remove_punctuation, remove_special_characters
 
 
 class My_Crawler:
@@ -47,25 +47,22 @@ class My_Crawler:
         artist_folder = join_to_path(self.out_path, artist)
         os.makedirs(artist_folder, exist_ok = True)
         songs = doc.xpath(XPATHS["songs"])
-        songs_folder = []
-        for i, song in enumerate(songs):
-            songs[i] = remove_punctuation(song, [".", "\n", ","], "\n",
-                                        separator = ' ')
-            song_folder = join_to_path(artist_folder, songs[i])
-            songs_folder.append(song_folder)
-            os.makedirs(song_folder, exist_ok = True)
-            self.midi_files[artist][songs[i]] = []
-        with open(artist_folder + "songs_summary.txt", "w") as file1:
-            for song in songs:
-                file1.write(song + "\n")
-        tables = [fromstring(tostring(table)) for table in
-                                                doc.xpath(XPATHS["table"])]
+        songs_dict = {
+                "artist": artist,
+                "artist_folder": artist_folder,
+                "doc": doc,
+                    }
+        self.get_songs(songs, **songs_dict)
+
+
+    def get_pieces(self, tables, *args, **kwargs):
         for i, table in enumerate(tables):
             song_data = {}
             cols_idxs = {}
-            lines = [fromstring(tostring(line)) for line in
-                                            table.xpath(XPATHS["lines_table"])]
-            file2 = open(songs_folder[i] + songs[i] + "_summary.txt", "w")
+            lines = [fromstring(tostring(line))
+                     for line in table.xpath(XPATHS["lines_table"])]
+            file2 = open(kwargs["songs_folder"][i] + kwargs["songs"][i] +
+                                            "_summary.txt", "w")
             table_data = []
             for idx, line in enumerate(lines):
                 line_data = []
@@ -78,25 +75,49 @@ class My_Crawler:
                             cols_idxs[idx_col] = col
                             line_data.append(col)
                 else:
-                    first_col = [col.lower().replace(".", "_").replace(" ", "")
-                            for col in line.xpath(XPATHS["cols_table"]("d[1]/a"))]
-                    cols = first_col + [col.lower()
-                            for col in line.xpath(XPATHS["cols_table"]("d"))]
+                    first_col = [remove_special_characters(
+                                    col.replace(".", "_").replace(" ", ""))
+                        for col in line.xpath(XPATHS["cols_table"]("d[1]/a"))]
+                    cols = first_col + [remove_special_characters(col)
+                        for col in line.xpath(XPATHS["cols_table"]("d"))]
                     for idx_col, col in enumerate(cols):
                         if idx_col in cols_idxs.keys():
                             song_data[cols_idxs[idx_col]].append(col)
                             line_data.append(col)
                     midi_file = line.xpath(XPATHS["link_midi"])
                     midi_url = urljoin(self.url_base, midi_file[0])
-                    folder = songs_folder[i]
+                    folder = kwargs["songs_folder"][i]
                     song_name = song_data["part"][-1]
-                    song_file = folder + song + ".mid"
-                    self.midi_files[artist][songs[i]].append(song_file)
+                    song_file = folder + song_name + ".mid"
+                    self.midi_files[kwargs["artist"]][
+                                        kwargs["songs"][i]].append(song_file)
                     if not os.path.isfile(song_file) or self.redownload:
                         self.save_midi(midi_url, song_file)
                 file2.write(",".join(line_data))
                 file2.write("\n")
                 table_data.append(line_data)
+
+
+    def get_songs(self, songs, *args, **kwargs):
+        songs_folder = []
+        for i, song in enumerate(songs):
+            songs[i] = remove_punctuation(song, [".", "\n", ","], "\n",
+                                        separator = ' ')
+            song_folder = join_to_path(kwargs["artist_folder"], songs[i])
+            songs_folder.append(song_folder)
+            os.makedirs(song_folder, exist_ok = True)
+            self.midi_files[kwargs["artist"]][songs[i]] = []
+        with open(kwargs["artist_folder"] + "songs_summary.txt", "w") as file1:
+            for song in songs:
+                file1.write(song + "\n")
+        tables = [fromstring(tostring(table)) for table in
+                                        kwargs["doc"].xpath(XPATHS["table"])]
+        pieces_dict = kwargs.copy()
+        pieces_dict.update({
+            "songs_folder": songs_folder,
+            "songs": songs,
+        })
+        self.get_pieces(tables, **pieces_dict)
 
 
     def get_first_page(self, *args, **kwargs):
