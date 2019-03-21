@@ -9,7 +9,7 @@ import os
 import sys
 
 from .constants import RELEVANT_COLS, XPATHS
-from .utils import remove_punctuation
+from .utils import join_to_path, remove_punctuation
 
 
 class My_Crawler:
@@ -20,8 +20,8 @@ class My_Crawler:
 
 
     @property
-    def bar(self):
-        return '/' if 'win' not in sys.platform else '\\'
+    def redownload(self):
+        return self.kwargs.get("redownload", True)
 
 
     @property
@@ -37,19 +37,6 @@ class My_Crawler:
         return parser.scheme + "://" + parser.netloc + "/"
 
 
-    @property
-    def out_path(self):
-        out_path = self.kwargs.get("out_path", None)
-        if not out_path:
-            raise Exception("An output folder has not been specified")
-        return self.kwargs["out_path"]
-
-
-    @property
-    def redownload(self):
-        return self.kwargs.get("redownload", True)
-
-
     def get_artist_midis(self, url, *args, **kwargs):
         response = requests.get(url)
         if response.status_code >= 400:
@@ -57,15 +44,16 @@ class My_Crawler:
         doc = fromstring(response.content)
         artist = unidecode.unidecode(doc.xpath(XPATHS["artist"])[0]).lower()
         self.midi_files[artist] = {}
-        artist_folder = self.out_path + artist + self.bar
+        artist_folder = join_to_path(self.out_path, artist)
         os.makedirs(artist_folder, exist_ok = True)
         songs = doc.xpath(XPATHS["songs"])
         songs_folder = []
         for i, song in enumerate(songs):
             songs[i] = remove_punctuation(song, [".", "\n", ","], "\n",
                                         separator = ' ')
-            songs_folder.append(artist_folder + songs[i] + self.bar)
-            os.makedirs(artist_folder + songs[i] + self.bar, exist_ok = True)
+            song_folder = join_to_path(artist_folder, songs[i])
+            songs_folder.append(song_folder)
+            os.makedirs(song_folder, exist_ok = True)
             self.midi_files[artist][songs[i]] = []
         with open(artist_folder + "songs_summary.txt", "w") as file1:
             for song in songs:

@@ -1,5 +1,14 @@
 import re
+import sys
 import unidecode
+
+
+def join_to_path(base, *args, **kwargs):
+    bar = '/' if 'win' not in sys.platform else '\\'
+    string = base if base.endswith(bar) else base + bar
+    for arg in args:
+        string += arg.replace(bar, "") + bar
+    return string
 
 
 def remove_punctuation(string, removals, strip_it, separator):
