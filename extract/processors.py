@@ -50,13 +50,13 @@ class My_Crawler:
         return self.kwargs.get("redownload", True)
 
 
-
     def get_artist_midis(self, url, *args, **kwargs):
         response = requests.get(url)
         if response.status_code >= 400:
             raise Exception("The url is not responding.")
         doc = fromstring(response.content)
         artist = unidecode.unidecode(doc.xpath(XPATHS["artist"])[0]).lower()
+        self.midi_files[artist] = {}
         artist_folder = self.out_path + artist + self.bar
         os.makedirs(artist_folder, exist_ok = True)
         songs = doc.xpath(XPATHS["songs"])
@@ -66,6 +66,7 @@ class My_Crawler:
                                         separator = ' ')
             songs_folder.append(artist_folder + songs[i] + self.bar)
             os.makedirs(artist_folder + songs[i] + self.bar, exist_ok = True)
+            self.midi_files[artist][songs[i]] = []
         with open(artist_folder + "songs_summary.txt", "w") as file1:
             for song in songs:
                 file1.write(song + "\n")
@@ -101,11 +102,13 @@ class My_Crawler:
                     midi_url = urljoin(self.url_base, midi_file[0])
                     folder = songs_folder[i]
                     song_name = song_data["part"][-1]
-                    if not os.path.isfile(folder + song_name) or self.redownload:
-                        self.save_midi(midi_url, folder, song_name)
+                    song_file = folder + song + ".mid"
+                    self.midi_files[artist][songs[i]].append(song_file)
+                    if not os.path.isfile(song_file) or self.redownload:
+                        self.save_midi(midi_url, song_file)
                 file2.write(",".join(line_data))
                 file2.write("\n")
-                table_data.append(line_data)                
+                table_data.append(line_data)
 
 
     def get_first_page(self, *args, **kwargs):
@@ -119,7 +122,7 @@ class My_Crawler:
             self.get_artist_midis(artist_url)
 
 
-    def save_midi(self, url, folder, song, *args, **kwargs):
+    def save_midi(self, url, song_file, *args, **kwargs):
         response = requests.get(url, allow_redirects = True)
         if response.status_code <= 400:
-            open(folder + song + ".mid", "wb").write(response.content)
+            open(song_file, "wb").write(response.content)

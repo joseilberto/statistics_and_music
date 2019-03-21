@@ -3,11 +3,12 @@ from .processors import My_Crawler
 
 class Crawler(My_Crawler):
     def __init__(self, url, *args, **kwargs):
+        self.midi_files = {}
         super(Crawler, self).__init__(url, *args, **kwargs)
 
 
     @property
-    def download(self):        
+    def download(self):
         return self.kwargs.get("download", True)
 
 
