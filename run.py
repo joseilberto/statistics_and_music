@@ -31,5 +31,10 @@ def process_args(arguments = set_args()):
 
 if __name__ == "__main__":
     output_path = process_args()
-    crawler = Crawler(MIDI_URL, **{"out_path": output_path})
+    kwargs = {
+        "out_path": output_path,
+        "download": False,
+        "redownload": False,
+    }
+    crawler = Crawler(MIDI_URL, **kwargs)
     crawler.get_and_store_midis(MIDI_URL, output_path)
