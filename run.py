@@ -3,6 +3,7 @@ import os
 
 from extract.SETTINGS import MIDI_URL
 from extract.crawler import Crawler
+from transform.transformer import MidiToCSV
 
 
 def set_args():
@@ -31,10 +32,16 @@ def process_args(arguments = set_args()):
 
 if __name__ == "__main__":
     output_path = process_args()
-    kwargs = {
+    crawler_kwargs = {
         "out_path": output_path,
         "download": False,
         "redownload": False,
     }
-    crawler = Crawler(MIDI_URL, **kwargs)
+    transformer_kwargs = {
+        "out_path": output_path,
+    }
+    crawler = Crawler(MIDI_URL, **crawler_kwargs)
+    transformer = MidiToCSV(**transformer_kwargs)
     crawler.get_and_store_midis(MIDI_URL, output_path)
+    files = crawler.midi_files
+    transformer.transform_data(files)
