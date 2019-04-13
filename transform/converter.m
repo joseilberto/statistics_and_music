@@ -2,7 +2,7 @@ function convert_midi_to_csv = converter(midi_file, output_file, miditoolbox_pat
 warning('off')
 addpath(miditoolbox_path)
 midi_to_data = readmidi(midi_file);
-cheader = {'t_beats' 'DeltaT_beats' 'canal' 'note_number' 'loudness' 't_seconds' 'DeltaT_seconds'};
+cheader = {'t_beats' 'DeltaT_beats' 'channel' 'note_number' 'loudness' 't_seconds' 'DeltaT_seconds'};
 commaheader = [cheader;repmat({','},1,numel(cheader))];
 commaheader = commaheader(:)';
 textheader = cell2mat(commaheader);
