@@ -76,7 +76,7 @@ class My_Crawler:
                             line_data.append(col)
                 else:
                     first_col = [remove_special_characters(
-                                    col.replace(".", "_").replace(" ", ""))
+                        col.replace(".", "_").replace(" ", "").replace("'", ""))
                         for col in line.xpath(XPATHS["cols_table"]("d[1]/a"))]
                     cols = first_col + [remove_special_characters(col)
                         for col in line.xpath(XPATHS["cols_table"]("d"))]
@@ -101,7 +101,7 @@ class My_Crawler:
     def get_songs(self, songs, *args, **kwargs):
         songs_folder = []
         for i, song in enumerate(songs):
-            songs[i] = remove_punctuation(song, [".", "\n", ","], "\n",
+            songs[i] = remove_punctuation(song, [".", "\n", ",", "'"], "\n",
                                         separator = ' ')
             song_folder = join_to_path(kwargs["artist_folder"], songs[i])
             songs_folder.append(song_folder)
