@@ -44,6 +44,8 @@ class Properties_Calculator:
             output_file = output_base("_statistics")
             if not os.path.isfile(output_file) or self.redo_sigma_entropy:
                 data = self.calculate_sigma_and_entropy(file)
+                if len(data) == 0:
+                    continue
                 self.save_sigma_entropy_data(data, output_file)
                 self.save_top10(data, output_base("_top10_frequency"), "k")
                 self.save_top10(data, output_base("_top10_entropy"), "entropy")
