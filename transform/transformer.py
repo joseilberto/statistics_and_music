@@ -81,7 +81,7 @@ class MidiToCSV:
                 data = pd.read_csv(file)
                 data["note"] = data["note_number"].map(NOTES_DICT)
                 transformed_data["note"] = data.apply(note_beat_index, axis = 1)
-                transformed_data["channel"] = data["canal"]
+                transformed_data["channel"] = data["channel"]
                 transformed_data["t_seconds"] = data["t_seconds"]
                 transformed_data.sort_values(by = ["t_seconds", "channel"],
                                                     inplace = True)
