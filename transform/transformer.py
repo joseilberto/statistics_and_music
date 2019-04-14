@@ -4,9 +4,10 @@ import os
 import pandas as pd
 
 from .constants import NOTES_DICT
+from .processors import Properties_Calculator
 
 
-class MidiToCSV:
+class MidiToCSV(Properties_Calculator):
     def __init__(self, *args, **kwargs):
         self.csv_files = []
         self.args = args
@@ -70,7 +71,7 @@ class MidiToCSV:
 
     def transform_raw_to_structured(self, files, *args, **kwargs):
         def note_beat_index(row):
-            return row["note"] + "_" + str(row["DeltaT_beats"])
+            return row["note"] + "_" + str(round(row["DeltaT_beats"], 3))
 
         transformed_csv_files = []
         for file in files:
@@ -83,6 +84,8 @@ class MidiToCSV:
                 transformed_data["note"] = data.apply(note_beat_index, axis = 1)
                 transformed_data["channel"] = data["channel"]
                 transformed_data["t_seconds"] = data["t_seconds"]
+                transformed_data["DeltaT_seconds"] = data["DeltaT_seconds"]
                 transformed_data.sort_values(by = ["t_seconds", "channel"],
                                                     inplace = True)
                 transformed_data.to_csv(transformed_file, index = False)
+        self.create_sigma_entropy_files(transformed_csv_files)
