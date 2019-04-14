@@ -51,11 +51,11 @@ class Properties_Calculator:
 
 
     def save_sigma_entropy_data(self, data, output_file, *args, **kwargs):
-        data.sort_values(by = ["sigma"], inplace = True)
+        data.sort_values(by = ["sigma"], ascending = False, inplace = True)
         data.to_csv(output_file, index = False)
 
 
     def save_top10(self, data, output_file, column = "sigma", top = 10, *args,
                                                                     **kwargs):
-        data.sort_values(by = [column], inplace = True)
+        data.sort_values(by = [column], ascending = False, inplace = True)
         data.head(top).to_csv(output_file, index = False)
