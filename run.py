@@ -51,4 +51,5 @@ if __name__ == "__main__":
     crawler.get_and_store_midis(MIDI_URL, output_path)
     files = crawler.midi_files
     transformer.transform_data(files)
-    loader.plotter.plot_sigma(files)
+    loader.plotter.plot_property(files, property = "sigma")
+    loader.plotter.plot_property(files, property = "entropy")

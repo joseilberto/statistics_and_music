@@ -23,12 +23,15 @@ class PlotSigmaEntropy:
 
 
     @parse_data
-    def plot_sigma(self, pieces, artist, song, *args, **kwargs):
+    def plot_property(self, pieces, artist, song, property = "sigma",
+                                                            *args, **kwargs):
         base_folder = os.path.dirname(pieces[0]) + "/csv_files/sigma_entropy/"
         output_folder = '/'.join(os.path.dirname(pieces[0]).split("/")[:4])
         output_folder = output_folder + "/summary/"
         os.makedirs(output_folder, exist_ok = True)
-        output_fig = output_folder + "{}_{}_SIGMA.pdf".format(artist, song)
+        pattern = ("{}_{}_ENTROPY.pdf" if "entropy" in property
+                                        else "{}_{}_SIGMA.pdf")
+        output_fig = output_folder + pattern.format(artist, song)
         fig, ax = plt.subplots()
         xmax, ymax = 0, 0
         for idx, piece in enumerate(pieces):
@@ -40,19 +43,24 @@ class PlotSigmaEntropy:
             if data.empty:
                 continue
             xmax = data["k"].max() if data["k"].max() > xmax else xmax
-            ymax = (1 + ceil(data["sigma"].max())
-                        if 1 + ceil(data["sigma"].max()) > ymax
+            ymax = (1 + ceil(data[property].max())
+                        if 1 + ceil(data[property].max()) > ymax
                         else ymax)
             idx_color = (idx if idx < len(self.colors)
                                 else idx - len(self.colors))
-            ax.scatter(data["k"], data["sigma"], c = self.colors[idx_color],
+            ax.scatter(data["k"], data[property], c = self.colors[idx_color],
                                     alpha = 0.5, label = piece_name)
         ks = np.arange(3, xmax + 1)
-        sigmas_geometric = np.sqrt(ks - 1)
-        ax.plot(ks, sigmas_geometric, color = 'r', label = r"$\sqrt{k - 1}$")
+        if "sigma" in property:
+            sigmas_geometric = np.sqrt(ks - 1)
+            ax.plot(ks, sigmas_geometric, color = 'r', label = r"$\sqrt{k - 1}$")
+            ax.set_ylabel(r"$\sigma(k)$")
+        elif "entropy" in property:
+            entropy_geometric = np.log(ks - 1)
+            ax.plot(ks, entropy_geometric, color = 'r', label = r"$\ln{k - 1}$")
+            ax.set_ylabel(r"$H_g(k)$")
         ax.legend(loc = "upper left", fontsize = 5)
         ax.set_xlabel(r"$k$")
-        ax.set_ylabel(r"$\sigma$")
         ax.set_title(song)
         ax.set_xscale("log")
         xmax_round = 10**(2) if xmax < 10**(2) else 10**(3)
