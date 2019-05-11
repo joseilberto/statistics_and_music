@@ -17,9 +17,7 @@ class Properties_Calculator:
             return entropy
 
         data = pd.read_csv(file)
-        min_time_seconds = data["DeltaT_seconds"].min()
         columns = ["note", "k", "sigma", "entropy"]
-        data["t_seconds"] = (data["t_seconds"] / min_time_seconds).round()
         grouped = data.groupby("note")
         processed = []
         for note, cur_data in grouped:
