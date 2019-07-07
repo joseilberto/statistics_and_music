@@ -89,3 +89,4 @@ class MidiToCSV(Properties_Calculator):
                                                     inplace = True)
                 transformed_data.to_csv(transformed_file, index = False)
         self.create_sigma_entropy_files(transformed_csv_files)
+        self.create_time_series_files(transformed_csv_files)
