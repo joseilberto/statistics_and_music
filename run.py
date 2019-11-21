@@ -47,9 +47,11 @@ if __name__ == "__main__":
     }
     crawler = Crawler(MIDI_URL, **crawler_kwargs)
     transformer = MidiToCSV(**transformer_kwargs)
-    loader = LoaderToPlot(PlotSigmaEntropy, **loader_plotter_kwargs)
     crawler.get_and_store_midis(MIDI_URL, output_path)
     files = crawler.midi_files
     transformer.transform_data(files)
-    loader.plotter.plot_property(files, property = "sigma")
-    loader.plotter.plot_property(files, property = "entropy")
+    loader = LoaderToPlot(PlotSigmaEntropy, **loader_plotter_kwargs)
+    loader.plot_property(files, property = "sigma")
+    loader.plot_property(files, property = "entropy")
+    loader.plot_barcode(files, property = "barcode")
+    

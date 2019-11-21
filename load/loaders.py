@@ -1,3 +1,7 @@
-class LoaderToPlot:
-    def __init__(self, Plot_Class, *args, **kwargs):
-        self.plotter = Plot_Class(*args, **kwargs)
+from .processors import PlotBarCode, PlotSigmaEntropy
+
+
+class LoaderToPlot(PlotBarCode, PlotSigmaEntropy):
+    def __init__(self, *args, **kwargs):        
+        self.args = args
+        self.kwargs = kwargs
