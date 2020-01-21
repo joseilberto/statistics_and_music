@@ -8,4 +8,4 @@ pandas==0.24.2
 requests==2.21.0
 scipy==1.2.1
 unidecode==1.0.23
-validators==0.12.4
+validators==0.12.6
