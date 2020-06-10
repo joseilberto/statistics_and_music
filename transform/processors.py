@@ -1,3 +1,5 @@
+from os.path import join
+
 import numpy as np
 import os
 import pandas as pd
@@ -47,11 +49,11 @@ class Properties_Calculator:
 
     def create_sigma_entropy_files(self, files, *args, **kwargs):
         for file in files:
-            base_folder = os.path.dirname(file) + "/sigma_entropy/"
+            base_folder = join(os.path.dirname(file), "sigma_entropy")
             file_base = os.path.basename(file).replace("_transformed",
                                                                 "{}")
             os.makedirs(base_folder, exist_ok = True)
-            output_base = (base_folder + file_base).format
+            output_base = join(base_folder, file_base).format
             output_file = output_base("_statistics")
             if not os.path.isfile(output_file) or self.redo_sigma_entropy:
                 data = self.calculate_sigma_and_entropy(file)
@@ -65,11 +67,11 @@ class Properties_Calculator:
     
     def create_time_series_files(self, files, *args, **kwargs):
         for file in files:
-            base_folder = os.path.dirname(file) + "/time_series/"
+            base_folder = join(os.path.dirname(file), "time_series")
             file_base = os.path.basename(file).replace("_transformed", "{}")
             
             os.makedirs(base_folder, exist_ok = True)
-            output_base = (base_folder + file_base).format
+            output_base = join(base_folder, file_base).format
             output_file = output_base("_time_series")
             if not os.path.isfile(output_file) or self.redo_time_series:
                 full_data = pd.read_csv(file)
