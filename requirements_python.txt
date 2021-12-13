@@ -1,6 +1,6 @@
 ipython==7.3.0
 ipdb==0.12
-lxml==4.3.2
+lxml==4.6.5
 matplotlib==3.0.3
 music21==5.5.0
 numpy==1.16.2
