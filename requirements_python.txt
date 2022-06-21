@@ -3,7 +3,7 @@ ipdb==0.12
 lxml==4.3.2
 matplotlib==3.0.3
 music21==5.5.0
-numpy==1.16.2
+numpy==1.22.0
 pandas==0.24.2
 requests==2.21.0
 scipy==1.2.1
